@@ -6,6 +6,10 @@ body {
   font-family: Arial, sans-serif;
   background: #f7f7f8;
 }
+/* 隐藏元素通用类 */
+.hidden {
+  display: none;
+}
 /*. Top bar */
 .top-bar {
   display: flex;
