@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI聊天客户端</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="top-bar">
+      <h1 class="title">AI聊天客户端</h1>
+      <select id="modelSelect" class="model-select"></select>
+      <input
+        id="customModel"
+        class="model-input hidden"
+        type="text"
+        placeholder="模型名称"
+      />
+      <button id="settingsBtn" class="settings-btn" aria-label="设置">
+        ⚙️
+      </button>
+    </header>
+    <main id="chat" class="chat-area"></main>
+    <form id="inputForm" class="input-bar">
+      <textarea id="messageInput" placeholder="输入消息..." rows="1"></textarea>
+      <button type="submit">发送</button>
+    </form>
+
+    <div id="settingsModal" class="modal hidden">
+      <div class="modal-content">
+        <h2>设置</h2>
+        <label
+          >API提供商
+          <select id="provider">
+            <option value="openai">OpenAI</option>
+            <option value="anthropic">Anthropic</option>
+            <option value="custom">自定义</option>
+          </select>
+        </label>
+        <label
+          >接口地址
+          <input
+            id="apiUrl"
+            type="text"
+            placeholder="https://api.openai.com/v1/chat/completions"
+          />
+        </label>
+        <label
+          >API密钥
+          <input id="apiKey" type="text" />
+        </label>
+        <button id="saveSettings">保存</button>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
