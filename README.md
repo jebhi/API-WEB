@@ -1,7 +1,7 @@
 # AI-WEB
 
-A simple mobile-friendly web client for interacting with AI APIs. It supports custom API URL and API key and displays conversations in a ChatGPT-like interface.
+一个简单的移动端友好型 Web 客户端，用于与各种 AI 接口交互。界面语言为中文，支持在设置中选择模型、切换 API 提供商（OpenAI 或自定义）以及配置 API 地址和密钥。
 
-## Usage
+## 使用方法
 
-Open `index.html` in a browser. Use the settings button to configure your API URL and key, then start chatting.
+在浏览器中打开 `index.html`。点击右上角的设置按钮，可配置提供商、API 地址、模型和 API Key，保存后即可开始聊天。

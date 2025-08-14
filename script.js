@@ -6,6 +6,10 @@ const settingsModal = document.getElementById("settingsModal");
 const apiUrlInput = document.getElementById("apiUrl");
 const apiKeyInput = document.getElementById("apiKey");
 const saveSettingsBtn = document.getElementById("saveSettings");
+const providerSelect = document.getElementById("provider");
+const modelSelect = document.getElementById("model");
+const customModelInput = document.getElementById("customModel");
+const apiUrlLabel = document.getElementById("apiUrlLabel");
 
 let messages = [];
 
@@ -21,17 +25,53 @@ function appendMessage(role, content) {
 }
 
 function loadSettings() {
+  const provider = localStorage.getItem("provider") || "openai";
+  providerSelect.value = provider;
+  updateApiUrlVisibility();
   apiUrlInput.value =
     localStorage.getItem("apiUrl") ||
     "https://api.openai.com/v1/chat/completions";
   apiKeyInput.value = localStorage.getItem("apiKey") || "";
+  const model = localStorage.getItem("model") || "gpt-3.5-turbo";
+  if ([...modelSelect.options].some((o) => o.value === model)) {
+    modelSelect.value = model;
+    customModelInput.value = "";
+    updateModelInput();
+  } else {
+    modelSelect.value = "custom";
+    customModelInput.value = model;
+    updateModelInput();
+  }
 }
 
 function saveSettings() {
+  localStorage.setItem("provider", providerSelect.value);
   localStorage.setItem("apiUrl", apiUrlInput.value);
   localStorage.setItem("apiKey", apiKeyInput.value);
+  const model =
+    modelSelect.value === "custom" ? customModelInput.value : modelSelect.value;
+  localStorage.setItem("model", model);
   settingsModal.classList.add("hidden");
 }
+
+function updateApiUrlVisibility() {
+  if (providerSelect.value === "openai") {
+    apiUrlLabel.classList.add("hidden");
+  } else {
+    apiUrlLabel.classList.remove("hidden");
+  }
+}
+
+function updateModelInput() {
+  if (modelSelect.value === "custom") {
+    customModelInput.classList.remove("hidden");
+  } else {
+    customModelInput.classList.add("hidden");
+  }
+}
+
+providerSelect.addEventListener("change", updateApiUrlVisibility);
+modelSelect.addEventListener("change", updateModelInput);
 
 settingsBtn.addEventListener("click", () => {
   loadSettings();
@@ -52,8 +92,13 @@ inputForm.addEventListener("submit", async (e) => {
   messages.push({ role: "user", content });
   messageInput.value = "";
 
-  const apiUrl = localStorage.getItem("apiUrl");
+  const provider = localStorage.getItem("provider") || "openai";
+  const apiUrl =
+    provider === "openai"
+      ? "https://api.openai.com/v1/chat/completions"
+      : localStorage.getItem("apiUrl");
   const apiKey = localStorage.getItem("apiKey");
+  const model = localStorage.getItem("model") || "gpt-3.5-turbo";
 
   try {
     const res = await fetch(apiUrl, {
@@ -63,16 +108,16 @@ inputForm.addEventListener("submit", async (e) => {
         Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: "gpt-3.5-turbo",
+        model,
         messages,
       }),
     });
     const data = await res.json();
-    const reply = data.choices?.[0]?.message?.content?.trim() || "No response";
+    const reply = data.choices?.[0]?.message?.content?.trim() || "无响应";
     appendMessage("ai", reply);
     messages.push({ role: "assistant", content: reply });
   } catch (err) {
-    appendMessage("ai", "Error: " + err.message);
+    appendMessage("ai", "错误: " + err.message);
   }
 });
 
