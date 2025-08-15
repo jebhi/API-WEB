@@ -13,6 +13,15 @@ const apiUrlLabel = document.getElementById("apiUrlLabel");
 
 let messages = [];
 
+const providerApiUrls = {
+  openai: "https://api.openai.com/v1/chat/completions",
+  anthropic: "https://api.anthropic.com/v1/messages",
+  google:
+    "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent",
+  baidu:
+    "https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop/chat/completions",
+};
+
 function appendMessage(role, content) {
   const messageEl = document.createElement("div");
   messageEl.className = `message ${role}`;
@@ -27,12 +36,11 @@ function appendMessage(role, content) {
 function loadSettings() {
   const provider = localStorage.getItem("provider") || "openai";
   providerSelect.value = provider;
-  updateApiUrlVisibility();
   apiUrlInput.value =
-    localStorage.getItem("apiUrl") ||
-    "https://api.openai.com/v1/chat/completions";
+    localStorage.getItem("apiUrl") || providerApiUrls[provider] || "";
+  updateApiUrlVisibility();
   apiKeyInput.value = localStorage.getItem("apiKey") || "";
-  const model = localStorage.getItem("model") || "gpt-3.5-turbo";
+  const model = localStorage.getItem("model") || "gpt-4o-mini";
   if ([...modelSelect.options].some((o) => o.value === model)) {
     modelSelect.value = model;
     customModelInput.value = "";
@@ -55,11 +63,7 @@ function saveSettings() {
 }
 
 function updateApiUrlVisibility() {
-  if (providerSelect.value === "openai") {
-    apiUrlLabel.classList.add("hidden");
-  } else {
-    apiUrlLabel.classList.remove("hidden");
-  }
+  apiUrlLabel.classList.toggle("hidden", providerSelect.value === "openai");
 }
 
 function updateModelInput() {
@@ -70,7 +74,12 @@ function updateModelInput() {
   }
 }
 
-providerSelect.addEventListener("change", updateApiUrlVisibility);
+providerSelect.addEventListener("change", () => {
+  if (providerSelect.value !== "custom") {
+    apiUrlInput.value = providerApiUrls[providerSelect.value] || "";
+  }
+  updateApiUrlVisibility();
+});
 modelSelect.addEventListener("change", updateModelInput);
 
 settingsBtn.addEventListener("click", () => {
@@ -95,25 +104,57 @@ inputForm.addEventListener("submit", async (e) => {
   const provider = localStorage.getItem("provider") || "openai";
   const apiUrl =
     provider === "openai"
-      ? "https://api.openai.com/v1/chat/completions"
-      : localStorage.getItem("apiUrl");
+      ? providerApiUrls.openai
+      : localStorage.getItem("apiUrl") || providerApiUrls[provider];
   const apiKey = localStorage.getItem("apiKey");
-  const model = localStorage.getItem("model") || "gpt-3.5-turbo";
+  const model = localStorage.getItem("model") || "gpt-4o-mini";
 
   try {
-    const res = await fetch(apiUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({
-        model,
-        messages,
-      }),
-    });
-    const data = await res.json();
-    const reply = data.choices?.[0]?.message?.content?.trim() || "无响应";
+    let reply = "无响应";
+    if (provider === "anthropic") {
+      const res = await fetch(apiUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": apiKey,
+          "anthropic-version": "2023-06-01",
+        },
+        body: JSON.stringify({
+          model,
+          max_tokens: 1024,
+          messages,
+        }),
+      });
+      const data = await res.json();
+      reply = data.content?.[0]?.text?.trim() || reply;
+    } else if (provider === "google") {
+      const geminiMessages = messages.map((m) => ({
+        role: m.role === "assistant" ? "model" : "user",
+        parts: [{ text: m.content }],
+      }));
+      const res = await fetch(`${apiUrl}?key=${apiKey}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ contents: geminiMessages }),
+      });
+      const data = await res.json();
+      reply =
+        data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || reply;
+    } else {
+      const res = await fetch(apiUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({
+          model,
+          messages,
+        }),
+      });
+      const data = await res.json();
+      reply = data.choices?.[0]?.message?.content?.trim() || reply;
+    }
     appendMessage("ai", reply);
     messages.push({ role: "assistant", content: reply });
   } catch (err) {
