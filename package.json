@@ -1,0 +1,36 @@
+{
+  "name": "api-web",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "test": "echo \"No tests specified\" && exit 0"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.22.3",
+    "dayjs": "^1.11.10",
+    "react-hot-toast": "^2.4.1",
+    "zustand": "^4.5.2",
+    "idb-keyval": "^6.2.1",
+    "marked": "^9.1.5",
+    "dompurify": "^3.0.6",
+    "highlight.js": "^11.9.0",
+    "lucide-react": "^0.324.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.14",
+    "@types/react-dom": "^18.2.6",
+    "autoprefixer": "^10.4.16",
+    "daisyui": "^4.4.2",
+    "postcss": "^8.4.32",
+    "tailwindcss": "^3.3.5",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.0",
+    "@vitejs/plugin-react": "^4.1.0"
+  },
+  "type": "module"
+}

@@ -1,69 +1,12 @@
-<!doctype html>
-<html lang="zh-CN">
+<!DOCTYPE html>
+<html lang="zh" data-theme="light">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>AI 聊天客户端</title>
-    <link rel="stylesheet" href="style.css" />
+    <title>AI Web</title>
   </head>
   <body>
-    <header class="top-bar">
-      <h1 class="title">AI 聊天客户端</h1>
-      <button id="settingsBtn" class="settings-btn" aria-label="设置">
-        ⚙️
-      </button>
-    </header>
-    <main id="chat" class="chat-area"></main>
-    <form id="inputForm" class="input-bar">
-      <textarea
-        id="messageInput"
-        placeholder="输入消息..."
-        rows="1"
-      ></textarea>
-      <button type="submit">发送</button>
-    </form>
-
-    <div id="settingsModal" class="modal hidden">
-      <div class="modal-content">
-        <h2>设置</h2>
-        <label>
-          API 提供商
-          <select id="provider">
-            <option value="openai">OpenAI</option>
-            <option value="anthropic">Anthropic</option>
-            <option value="google">Google</option>
-            <option value="baidu">百度文心</option>
-            <option value="custom">自定义</option>
-          </select>
-        </label>
-        <label id="apiUrlLabel">
-          API 地址
-          <input
-            id="apiUrl"
-            type="text"
-            placeholder="https://api.openai.com/v1/chat/completions"
-          />
-        </label>
-        <label>
-          API 密钥
-          <input id="apiKey" type="text" />
-        </label>
-        <label>
-          模型
-          <select id="model">
-            <option value="gpt-4o-mini">gpt-4o-mini</option>
-            <option value="gpt-3.5-turbo">gpt-3.5-turbo</option>
-            <option value="claude-3-haiku-20240307">claude-3-haiku</option>
-            <option value="gemini-1.5-flash">gemini-1.5-flash</option>
-            <option value="ERNIE-Bot">ERNIE-Bot</option>
-            <option value="custom">自定义...</option>
-          </select>
-          <input id="customModel" type="text" class="hidden" placeholder="输入模型名称" />
-        </label>
-        <button id="saveSettings">保存</button>
-      </div>
-    </div>
-
-    <script src="script.js"></script>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
